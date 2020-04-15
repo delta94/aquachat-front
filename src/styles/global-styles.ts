@@ -10,6 +10,9 @@ const GlobalStyle = createGlobalStyle`
     body{
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif
     }
+    body{
+        background-color: #e6e9ef;
+    }
     a{
         color:inherit;
         text-decoration:none;

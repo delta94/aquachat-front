@@ -3,8 +3,7 @@ import styled from "../styles/typed-components";
 
 const Container = styled.div`
   width: 100%;
-
-  height: 50px;
+  min-height: 50px;
   display: flex;
   align-items: center;
   border-top: 1px solid ${(props) => props.theme.blueColor};

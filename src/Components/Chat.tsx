@@ -8,31 +8,34 @@ const Container = styled.div<TextProps>`
   justify-content: ${(props) => (props.itsMe ? "flex-end" : "flex-start")};
 `;
 
-const Text = styled.span`
+const Text = styled.span<TextProps>`
   font-weight: bold;
 `;
-const Avatar = styled.img`
+const Avatar = styled.img<TextProps>`
+  margin-right: ${(props) => (props.itsMe ? "20px" : 0)};
+  order: ${(props) => (props.itsMe ? 1 : 0)};
   width: 30px;
   height: 30px;
   border-radius: 99%;
-  order: 2;
 `;
 interface TextProps {
   itsMe: boolean;
 }
 interface IProps {
   text: string;
-  itsMe: boolean;
+  username: string;
 }
 
-const Chat: React.SFC<IProps> = ({ itsMe, text }) => {
+const Chat: React.SFC<IProps> = ({ username, text }) => {
+  const itsMe = username === "오옹";
   return (
     <Container itsMe={itsMe}>
       <Avatar
+        itsMe={itsMe}
         alt=""
         src="https://image.edaily.co.kr/images/Photo/files/NP/S/2019/08/PS19082000442.jpg"
       />
-      <Text>{text}</Text>
+      <Text itsMe={itsMe}>{text}</Text>
     </Container>
   );
 };
