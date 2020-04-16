@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "../styles/typed-components";
 import Chat from "./Chat";
 import Message from "./Message";
-import { useQuery } from "react-apollo";
+import { useQuery, useMutation, useSubscription } from "react-apollo";
 import { GET_ROOM } from "../Queries/RoomQueries";
+import { SEND_MESSAGE, NEW_MESSAGE } from "../Queries/MessageQueries";
 
 const Container = styled.div`
   display: flex;
@@ -29,30 +30,47 @@ const Log = styled.div`
 `;
 interface IProps {
   roomId: string;
+  user: string;
 }
-const Room: React.SFC<IProps> = ({ roomId }) => {
+const Room: React.SFC<IProps> = ({ roomId, user }) => {
   const [msg, setMsg] = useState<string>("");
   const [list, setList] = useState<string[]>([]);
-
-  //api call
-  console.log(roomId);
   const { data, loading } = useQuery(GET_ROOM, {
     skip: roomId === undefined || roomId === null,
     variables: {
       roomId,
     },
   });
-  console.log(data);
+  const [sendMessageMutation] = useMutation(SEND_MESSAGE);
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {
       target: { value },
     } = e;
     setMsg(value);
   };
-
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const { data: newData } = useSubscription(NEW_MESSAGE);
+  const handleNewMessage = () => {
+    if (newData !== undefined) {
+      const { newMessage } = newData;
+      setList((prev) => [...prev, newMessage.message.text]);
+    }
+  };
+  useEffect(() => {
+    handleNewMessage();
+  }, [newData]);
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setList((prev) => [...prev, msg]);
+    if (msg === "") return;
+    const success = await sendMessageMutation({
+      variables: {
+        text: msg,
+        sender: user,
+        roomId: roomId,
+      },
+    });
+    handleSubmit();
+  };
+  const handleSubmit = () => {
     setMsg("");
   };
   let id = 1;

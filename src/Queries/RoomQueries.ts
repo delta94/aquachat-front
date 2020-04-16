@@ -1,8 +1,8 @@
 import { gql } from "apollo-boost";
 
 export const GET_ROOMS = gql`
-  {
-    getRooms {
+  query($username: String!) {
+    getRooms(username: $username) {
       id
       messages {
         text

@@ -2,23 +2,35 @@ import React from "react";
 import GlobalStyle from "./styles/global-styles";
 import { ThemeProvider } from "./styles/typed-components";
 import { theme } from "./styles/theme";
-import LogIn from "./Routes/LogIn";
+import SignUp from "./Routes/SignUp";
 import Home from "./Routes/Home";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-function App() {
+import { useQuery } from "react-apollo";
+import { gql } from "apollo-boost";
+import LogIn from "./Routes/LogIn";
+import { graphql } from "react-apollo";
+import { IS_LOGGED_IN } from "./Queries/UserQueries";
+const LoggedInRoutes = () => (
+  <Switch>
+    <Route path="/" exact={true} component={Home} />
+  </Switch>
+);
+const LoggedOutRoutes = () => (
+  <Switch>
+    <Route path="/" exact={true} component={LogIn} />
+    <Route path="/signup" exact={true} component={SignUp} />
+  </Switch>
+);
+const App = (props: any) => {
+  const isLoggedIn = props.data.auth.isLoggedIn;
   return (
     <>
       <GlobalStyle />
       <ThemeProvider theme={theme}>
-        <Router>
-          <Switch>
-            <Route path="/" exact={true} component={Home} />
-            <Route path="/login" exact={true} component={LogIn} />
-          </Switch>
-        </Router>
+        <Router>{isLoggedIn ? <LoggedInRoutes /> : <LoggedOutRoutes />}</Router>
       </ThemeProvider>
     </>
   );
-}
+};
 
-export default App;
+export default graphql(IS_LOGGED_IN)(App);

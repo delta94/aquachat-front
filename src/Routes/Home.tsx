@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Room from "../Components/Room";
 import Profile from "../Components/Profile";
 import List from "../Components/List";
 import { useQuery } from "react-apollo";
 import { GET_ROOMS } from "../Queries/RoomQueries";
+import { IS_LOGGED_IN } from "../Queries/UserQueries";
 
 // 대화창이 가운데, 옆에 대기방들, 초대목록
 
@@ -31,11 +32,22 @@ const Loading = styled.div`
   place-self: center center;
 `;
 const Home = () => {
-  const { data: roomData, loading: roomLoading } = useQuery(GET_ROOMS);
+  const [currentUser, setCurrentUser] = useState("");
+  const { data: profileData } = useQuery(IS_LOGGED_IN);
+  const { data: roomData, loading: roomLoading } = useQuery(GET_ROOMS, {
+    skip: !currentUser,
+    variables: {
+      username: currentUser,
+    },
+  });
   const [renderRoomId, setRenderRoomId] = useState<string>("");
   const handleClick = (roomId: string) => {
     setRenderRoomId(roomId);
   };
+  useEffect(() => {
+    setCurrentUser(profileData?.auth.username);
+  }, [profileData]);
+  console.log(roomData);
   return (
     <Container>
       {roomLoading ? (
@@ -43,11 +55,11 @@ const Home = () => {
       ) : (
         <>
           <Left>
-            <Room roomId={renderRoomId} />
+            <Room user={currentUser} roomId={renderRoomId} />
           </Left>
           <Right>
-            <Profile />
-            <List roomData={roomData.getRooms} handleClick={handleClick} />
+            <Profile user={currentUser} />
+            <List roomData={roomData?.getRooms} handleClick={handleClick} />
           </Right>
         </>
       )}
