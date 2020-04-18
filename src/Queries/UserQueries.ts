@@ -24,10 +24,22 @@ export const LOG_USER_OUT = gql`
   }
 `;
 
+export const CREATE_USER = gql`
+  mutation createUser($username: String!, $email: String!, $gender: String!) {
+    createUser(username: $username, email: $email, gender: $gender) {
+      id
+      username
+    }
+  }
+`;
+
 export const GET_MY_PROFILE = gql`
   query($username: String!) {
     getMyProfile(username: $username) {
+      id
       username
+      email
+      gender
       avatar
     }
   }

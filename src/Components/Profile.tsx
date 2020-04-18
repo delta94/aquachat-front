@@ -28,6 +28,11 @@ const Button = styled.div`
   align-items: center;
   cursor: pointer;
 `;
+const Info = styled.div`
+  background-color: red;
+  width: 100px;
+  height: 100px;
+`;
 
 interface IProps {
   user: string | null;
@@ -40,8 +45,8 @@ const Profile: React.SFC<IProps> = ({ user }) => {
   };
   return (
     <Container>
-      {!loading && data && <Avatar src={data.getMyProfile.avatar} alt="" />}
-      <div>{user}</div>
+      {data && <Avatar src={data.getMyProfile.avatar} alt="" />}
+      <Info>이름</Info>
       <Button onClick={onClick}>Log Out</Button>
     </Container>
   );

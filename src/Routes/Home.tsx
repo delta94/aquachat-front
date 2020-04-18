@@ -13,16 +13,18 @@ const Container = styled.div`
   width: 70%;
   height: 100vh;
   margin: 0 auto;
+  padding: 50px 0px 50px;
   display: grid;
   grid-template-columns: 3fr 2fr;
   grid-gap: 5px;
 `;
 const Right = styled.div`
-  height: 600px;
+  height: 100%;
   width: 400px;
   align-self: center;
 `;
 const Left = styled.div`
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -34,7 +36,7 @@ const Loading = styled.div`
 const Home = () => {
   const [currentUser, setCurrentUser] = useState("");
   const { data: profileData } = useQuery(IS_LOGGED_IN);
-  const { data: roomData, loading: roomLoading } = useQuery(GET_ROOMS, {
+  const { data: roomData, loading: roomLoading, refetch: roomRefetch } = useQuery(GET_ROOMS, {
     skip: !currentUser,
     variables: {
       username: currentUser,
@@ -47,7 +49,10 @@ const Home = () => {
   useEffect(() => {
     setCurrentUser(profileData?.auth.username);
   }, [profileData]);
-  console.log(roomData);
+
+  useEffect(() => {
+    setRenderRoomId(roomData?.getRooms[0]?.id);
+  }, [roomData]);
   return (
     <Container>
       {roomLoading ? (
@@ -55,11 +60,16 @@ const Home = () => {
       ) : (
         <>
           <Left>
-            <Room user={currentUser} roomId={renderRoomId} />
+            <Room user={currentUser} roomId={renderRoomId} roomRefetch={roomRefetch} />
           </Left>
           <Right>
             <Profile user={currentUser} />
-            <List roomData={roomData?.getRooms} handleClick={handleClick} />
+            <List
+              roomData={roomData?.getRooms}
+              user={currentUser}
+              handleClick={handleClick}
+              refetch={roomRefetch}
+            />
           </Right>
         </>
       )}

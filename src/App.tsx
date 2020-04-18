@@ -10,6 +10,8 @@ import { gql } from "apollo-boost";
 import LogIn from "./Routes/LogIn";
 import { graphql } from "react-apollo";
 import { IS_LOGGED_IN } from "./Queries/UserQueries";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const LoggedInRoutes = () => (
   <Switch>
     <Route path="/" exact={true} component={Home} />
@@ -29,6 +31,7 @@ const App = (props: any) => {
       <ThemeProvider theme={theme}>
         <Router>{isLoggedIn ? <LoggedInRoutes /> : <LoggedOutRoutes />}</Router>
       </ThemeProvider>
+      <ToastContainer draggable={true} position="top-center" autoClose={2000} />
     </>
   );
 };

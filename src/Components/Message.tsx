@@ -9,6 +9,7 @@ const Container = styled.div`
   border-top: 1px solid ${(props) => props.theme.blueColor};
 `;
 const Input = styled.input`
+  background-color: #f4f4f5;
   border: 0;
   font-size: 15px;
   margin-left: 10px;

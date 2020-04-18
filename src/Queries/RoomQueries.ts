@@ -6,6 +6,7 @@ export const GET_ROOMS = gql`
       id
       messages {
         text
+        isNotif
       }
       userConnection {
         user {
@@ -25,7 +26,30 @@ export const GET_ROOM = gql`
           username
         }
         text
+        isNotif
       }
     }
+  }
+`;
+
+export const CREATE_ROOM = gql`
+  mutation {
+    createRoom {
+      id
+    }
+  }
+`;
+
+export const ADD_ROOM_USER = gql`
+  mutation($roomId: ID!, $userId: ID!) {
+    addRoomUser(roomId: $roomId, userId: $userId) {
+      id
+    }
+  }
+`;
+
+export const DELETE_ROOM = gql`
+  mutation($roomId: String!) {
+    deleteRoom(roomId: $roomId)
   }
 `;

@@ -3,7 +3,7 @@ import styled from "../styles/typed-components";
 import { Link } from "react-router-dom";
 import { useMutation } from "react-apollo";
 import { CONFIRM_USER, LOG_USER_IN } from "../Queries/UserQueries";
-
+import { toast, ToastContainer } from "react-toastify";
 const Container = styled.div`
   display: flex;
   align-items: center;
@@ -54,6 +54,7 @@ const Input = styled.input`
   height: 35px;
   font-size: 12px;
   padding: 0px 15px;
+  margin-bottom: 20px;
 `;
 const Button = styled.div`
   margin-top: 10px;
@@ -81,12 +82,21 @@ const LogIn = () => {
     setUsername(event.target.value);
   };
   const onClick = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    handleLogin();
+  };
+  const onKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const { which } = event;
+    if (which === 13) {
+      handleLogin();
+    }
+  };
+  const handleLogin = async () => {
     const data = await confirmUserMutation({ variables: { username } });
     if (!data) {
-      return console.log("No Data...");
+      return toast.error("No Data...");
     }
     if (!data.data.confirmUser) {
-      return console.log("Confirm fail");
+      return toast.error("Confirm fail");
     }
     try {
       await logUserInMutation({ variables: { username: username } });
@@ -102,7 +112,12 @@ const LogIn = () => {
           <Bold>AQUA CHAT</Bold>
         </Header>
         <Main>
-          <Input placeholder={"username"} onChange={onChange} value={username} />
+          <Input
+            onKeyPress={onKeyPress}
+            placeholder={"username"}
+            onChange={onChange}
+            value={username}
+          />
           <Button onClick={onClick}>Log in</Button>
           <Footer>
             <Link to="/signup">Craete Account</Link>
