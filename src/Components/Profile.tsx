@@ -10,11 +10,14 @@ const Container = styled.div`
   height: 200px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), 0 10px 19px rgba(0, 0, 0, 0.22);
   background-color: #f4f4f5;
+  justify-content: space-between;
 `;
 
 const Avatar = styled.img`
-  width: 100px;
-  height: 100px;
+  margin-top: 20px;
+  margin-left: 20px;
+  width: 150px;
+  height: 150px;
   border-radius: 99%;
 `;
 const Button = styled.div`
@@ -29,11 +32,25 @@ const Button = styled.div`
   cursor: pointer;
 `;
 const Info = styled.div`
-  background-color: red;
-  width: 100px;
+  margin-top: 70px;
+  display: flex;
+  flex-direction: column;
+  width: 200px;
   height: 100px;
+  margin-left: 20px;
 `;
-
+const UserInfo = styled.div`
+  font-size: 18px;
+  margin-bottom: 10px;
+  width: 100%;
+  display: flex;
+`;
+const List = styled.span``;
+const Gender = styled.span`
+  color: gray;
+  margin-left: 10px;
+`;
+const MailInfo = styled.span``;
 interface IProps {
   user: string | null;
 }
@@ -43,11 +60,18 @@ const Profile: React.SFC<IProps> = ({ user }) => {
   const onClick = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     await logOutMutation();
   };
+  console.log(data);
   return (
     <Container>
       {data && <Avatar src={data.getMyProfile.avatar} alt="" />}
-      <Info>이름</Info>
-      <Button onClick={onClick}>Log Out</Button>
+      <Info>
+        <UserInfo>
+          <List>{data?.getMyProfile.username}</List>
+          <Gender>{data?.getMyProfile.gender}</Gender>
+        </UserInfo>
+        <MailInfo>{data?.getMyProfile.email}</MailInfo>
+      </Info>
+      <Button onClick={onClick}>X</Button>
     </Container>
   );
 };

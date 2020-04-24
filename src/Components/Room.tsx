@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "../styles/typed-components";
 import Chat from "./Chat";
 import Message from "./Message";
 import { useQuery, useMutation, useSubscription } from "react-apollo";
 import { GET_ROOM, DELETE_ROOM, ADD_ROOM_USER } from "../Queries/RoomQueries";
-import { SEND_MESSAGE, NEW_MESSAGE } from "../Queries/MessageQueries";
+import { SEND_MESSAGE, NEW_MESSAGE, GET_MESSAGES } from "../Queries/MessageQueries";
 import Button from "./Button";
 import { GET_MY_PROFILE } from "../Queries/UserQueries";
 import Search from "./Search";
@@ -17,6 +17,12 @@ const Container = styled.div`
   height: 620px;
   box-shadow: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 38px rgba(0, 0, 0, 0.22);
   overflow: hidden;
+`;
+const UserList = styled.div`
+  font-weight: 800;
+  overflow-x: hidden;
+  font-size: 12px;
+  padding: 5px;
 `;
 const Loading = styled.div`
   display: flex;
@@ -33,22 +39,23 @@ const Wrapper = styled.div`
   display: flex;
   background-color: #f4f4f5;
   width: 100%;
-  height: 100%;
+  height: 620px;
   border-radius: 5px;
   flex-direction: column;
-  justify-content: flex-end;
 `;
 const Log = styled.div`
   padding: 10px;
-  height: 520px;
-  overflow-y: auto;
+  height: 540px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
 `;
 const Header = styled.div`
   height: 30px;
   width: 600px;
   border-bottom: 1px solid;
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   background-color: #f4f4f5;
 `;
 const Input = styled.input``;
@@ -60,6 +67,7 @@ interface IProps {
 }
 
 const Room: React.SFC<IProps> = ({ roomId, user, roomRefetch }) => {
+  const mainRef = useRef<HTMLDivElement>(null);
   const [msg, setMsg] = useState<string>("");
   const [list, setList] = useState<string[]>([]);
   const [userList, setUserList] = useState([]);
@@ -69,7 +77,13 @@ const Room: React.SFC<IProps> = ({ roomId, user, roomRefetch }) => {
       roomId,
     },
   });
-
+  const { data: msgData, loading: __, refetch: msgRefetch } = useQuery(GET_MESSAGES, {
+    skip: roomId === undefined || roomId === null,
+    variables: {
+      roomId,
+    },
+  });
+  console.log(msgData);
   const [deleteRoomMutation] = useMutation(DELETE_ROOM);
   const [sendMessageMutation] = useMutation(SEND_MESSAGE);
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,10 +94,11 @@ const Room: React.SFC<IProps> = ({ roomId, user, roomRefetch }) => {
   };
 
   const { data: newData } = useSubscription(NEW_MESSAGE);
-  const handleNewMessage = () => {
+  const handleNewMessage = async () => {
     if (newData !== undefined) {
       const { newMessage } = newData;
-      refetch();
+      await msgRefetch();
+      scrollToBottom();
     }
   };
   const handleRoomOut = async () => {
@@ -98,7 +113,9 @@ const Room: React.SFC<IProps> = ({ roomId, user, roomRefetch }) => {
       console.log(e);
     }
   };
-
+  useEffect(() => {
+    scrollToBottom();
+  }, [loading]);
   useEffect(() => {
     handleNewMessage();
   }, [newData]);
@@ -122,14 +139,20 @@ const Room: React.SFC<IProps> = ({ roomId, user, roomRefetch }) => {
     });
     handleSubmit();
   };
-
+  const scrollToBottom = () => {
+    if (!mainRef.current) return;
+    mainRef.current.scrollIntoView({ behavior: "smooth" });
+  };
   const handleSubmit = () => {
     setMsg("");
   };
   let id = 1;
+
   return (
     <Container>
       <Header>
+        {data &&
+          data.getRoom.userConnection.map((each: any) => <UserList>{each.user.username}</UserList>)}
         <Search roomId={roomId} />
         <Button onClick={handleRoomOut} text={"Exit"} />
       </Header>
@@ -137,9 +160,9 @@ const Room: React.SFC<IProps> = ({ roomId, user, roomRefetch }) => {
         <Loading>Welcome to Aqua Chat !</Loading>
       ) : (
         <Wrapper>
-          <Log id="target">
-            {data &&
-              data.getRoom.messages.map((message: any) => (
+          <Log>
+            {msgData &&
+              msgData.getMessages.map((message: any) => (
                 <Chat
                   key={message.id}
                   itsMe={message.user.username === user}
@@ -148,6 +171,8 @@ const Room: React.SFC<IProps> = ({ roomId, user, roomRefetch }) => {
                   isNotif={message.isNotif}
                 />
               ))}
+
+            <div ref={mainRef} />
           </Log>
           <Message onChange={onChange} onSubmit={onSubmit} text={msg} />
         </Wrapper>

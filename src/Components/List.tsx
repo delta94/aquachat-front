@@ -32,12 +32,19 @@ const RoomListContainer = styled.div`
   padding: 10px;
 `;
 interface IProps {
+  currentRoom: string;
   roomData: any;
   handleClick?: (roomId: string) => void;
   user?: string;
   refetch?: any;
 }
-const List: React.SFC<IProps> = ({ roomData, user, handleClick, refetch: roomRefetch }) => {
+const List: React.SFC<IProps> = ({
+  roomData,
+  user,
+  handleClick,
+  refetch: roomRefetch,
+  currentRoom,
+}) => {
   const { data, loading } = useQuery(GET_MY_PROFILE, { variables: { username: user } });
 
   const [createRoomMutation] = useMutation(CREATE_ROOM);
@@ -48,15 +55,15 @@ const List: React.SFC<IProps> = ({ roomData, user, handleClick, refetch: roomRef
       if (!newRoom.data) throw Error();
       const roomId = newRoom.data.createRoom.id;
       if (!roomId) throw Error();
-      console.log(roomId);
+
       const success = await addRoomUserMutation({
         variables: {
           roomId: roomId,
           userId: data.getMyProfile.id,
         },
       });
-      console.log(success);
-      roomRefetch();
+      await roomRefetch();
+      if (handleClick) handleClick(roomId);
     } catch (e) {
       toast.error(e);
     }
@@ -64,7 +71,7 @@ const List: React.SFC<IProps> = ({ roomData, user, handleClick, refetch: roomRef
   return (
     <Container>
       <Header>
-        <Button onClick={onClick} text={"create room"} />
+        <Button onClick={onClick} text={"방 만들기"} />
       </Header>
       <RoomListContainer>
         {roomData?.map((room: any) => (
@@ -74,6 +81,7 @@ const List: React.SFC<IProps> = ({ roomData, user, handleClick, refetch: roomRef
             messages={room.messages}
             handleClick={handleClick}
             roomId={room.id}
+            currentRoom={currentRoom}
           />
         ))}
       </RoomListContainer>

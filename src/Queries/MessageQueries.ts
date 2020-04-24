@@ -19,3 +19,14 @@ export const NEW_MESSAGE = gql`
     }
   }
 `;
+
+export const GET_MESSAGES = gql`
+  query($roomId: String!) {
+    getMessages(roomId: $roomId) {
+      user {
+        username
+      }
+      text
+    }
+  }
+`;

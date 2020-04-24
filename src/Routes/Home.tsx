@@ -65,6 +65,7 @@ const Home = () => {
           <Right>
             <Profile user={currentUser} />
             <List
+              currentRoom={renderRoomId}
               roomData={roomData?.getRooms}
               user={currentUser}
               handleClick={handleClick}

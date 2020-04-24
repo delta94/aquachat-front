@@ -10,3 +10,5 @@ real time chat app
 
 - [ ] Home(Rooms + Profile)
 - [ ] Edit Profile
+
+### Subscription: Message, New Room

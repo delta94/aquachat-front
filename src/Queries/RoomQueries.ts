@@ -28,6 +28,12 @@ export const GET_ROOM = gql`
         text
         isNotif
       }
+      userConnection {
+        user {
+          id
+          username
+        }
+      }
     }
   }
 `;

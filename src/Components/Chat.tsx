@@ -3,6 +3,8 @@ import styled from "../styles/typed-components";
 import { isNetworkRequestInFlight } from "apollo-client/core/networkStatus";
 
 const Container = styled.div<TextProps>`
+  justify-self: flex-end;
+  align-self: flex-end;
   width: 100%;
   padding: 5px;
   display: flex;
@@ -58,7 +60,6 @@ interface IProps {
 }
 
 const Chat: React.SFC<IProps> = ({ itsMe, text, currentUser, isNotif }) => {
-  console.log(isNotif);
   return (
     <Container itsMe={itsMe}>
       {isNotif ? (

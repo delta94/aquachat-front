@@ -46,7 +46,6 @@ const Search: React.SFC<IProps> = ({ roomId }) => {
         isNotif: true,
       },
     });
-    console.log(newUser);
   };
   return (
     <Container>
