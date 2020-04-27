@@ -13,6 +13,7 @@ const Container = styled.div<TextProps>`
 `;
 
 const TextContainer = styled.div<TextProps>`
+  margin-top: 5px;
   background-color: ${(props) => (props.itsMe ? props.theme.blueColor : "white")};
   border: ${(props) => (props.itsMe ? null : "1px solid rgba(0,0,0,0.2)")};
   padding: 10px;
@@ -57,9 +58,10 @@ interface IProps {
   itsMe: boolean;
   currentUser: string;
   isNotif: boolean;
+  avatar?: string;
 }
 
-const Chat: React.SFC<IProps> = ({ itsMe, text, currentUser, isNotif }) => {
+const Chat: React.SFC<IProps> = ({ itsMe, text, currentUser, isNotif, avatar }) => {
   return (
     <Container itsMe={itsMe}>
       {isNotif ? (
@@ -70,11 +72,7 @@ const Chat: React.SFC<IProps> = ({ itsMe, text, currentUser, isNotif }) => {
         <>
           <InfoColumn itsMe={itsMe}>
             <User>{currentUser}</User>
-            <Avatar
-              itsMe={itsMe}
-              alt=""
-              src="https://image.edaily.co.kr/images/Photo/files/NP/S/2019/08/PS19082000442.jpg"
-            />
+            <Avatar itsMe={itsMe} alt="" src={avatar} />
           </InfoColumn>
           <TextContainer itsMe={itsMe}>
             <Text itsMe={itsMe}>{text}</Text>

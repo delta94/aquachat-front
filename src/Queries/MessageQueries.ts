@@ -7,8 +7,8 @@ export const SEND_MESSAGE = gql`
 `;
 
 export const NEW_MESSAGE = gql`
-  subscription newMessage {
-    newMessage {
+  subscription newMessage($id: String!) {
+    newMessage(id: $id) {
       sender
       message {
         id
@@ -16,6 +16,7 @@ export const NEW_MESSAGE = gql`
       }
       date
       isNotif
+      roomId
     }
   }
 `;
@@ -25,8 +26,10 @@ export const GET_MESSAGES = gql`
     getMessages(roomId: $roomId) {
       user {
         username
+        avatar
       }
       text
+      isNotif
     }
   }
 `;

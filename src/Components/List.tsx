@@ -6,6 +6,7 @@ import Title from "./Title";
 import Button from "./Button";
 import { toast } from "react-toastify";
 import { GET_MY_PROFILE } from "../Queries/UserQueries";
+import Skeleton from "./Skeleton";
 
 const Container = styled.div`
   display: flex;
@@ -70,21 +71,27 @@ const List: React.SFC<IProps> = ({
   };
   return (
     <Container>
-      <Header>
-        <Button onClick={onClick} text={"방 만들기"} />
-      </Header>
-      <RoomListContainer>
-        {roomData?.map((room: any) => (
-          <Title
-            key={room.id}
-            users={room.userConnection}
-            messages={room.messages}
-            handleClick={handleClick}
-            roomId={room.id}
-            currentRoom={currentRoom}
-          />
-        ))}
-      </RoomListContainer>
+      {loading && !roomData ? (
+        <Skeleton width={"400"} height={"400"} />
+      ) : (
+        <>
+          <Header>
+            <Button onClick={onClick} text={"방 만들기"} />
+          </Header>
+          <RoomListContainer>
+            {roomData?.map((room: any) => (
+              <Title
+                key={room.id}
+                users={room.userConnection}
+                messages={room.messages}
+                handleClick={handleClick}
+                roomId={room.id}
+                currentRoom={currentRoom}
+              />
+            ))}
+          </RoomListContainer>
+        </>
+      )}
     </Container>
   );
 };

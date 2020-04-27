@@ -7,7 +7,9 @@ import { GET_ROOM, DELETE_ROOM, ADD_ROOM_USER } from "../Queries/RoomQueries";
 import { SEND_MESSAGE, NEW_MESSAGE, GET_MESSAGES } from "../Queries/MessageQueries";
 import Button from "./Button";
 import { GET_MY_PROFILE } from "../Queries/UserQueries";
-import Search from "./Search";
+import Search from "./Search/Search";
+import Skeleton from "./Skeleton";
+import Users from "./Users";
 
 const Container = styled.div`
   display: flex;
@@ -55,18 +57,23 @@ const Header = styled.div`
   width: 600px;
   border-bottom: 1px solid;
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   background-color: #f4f4f5;
 `;
 const Input = styled.input``;
-
+const Column = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 interface IProps {
   roomId: string;
   user: string;
   roomRefetch: any;
+  loading: boolean;
 }
 
-const Room: React.SFC<IProps> = ({ roomId, user, roomRefetch }) => {
+const Room: React.SFC<IProps> = ({ loading: ll, roomId, user, roomRefetch }) => {
   const mainRef = useRef<HTMLDivElement>(null);
   const [msg, setMsg] = useState<string>("");
   const [list, setList] = useState<string[]>([]);
@@ -83,7 +90,6 @@ const Room: React.SFC<IProps> = ({ roomId, user, roomRefetch }) => {
       roomId,
     },
   });
-  console.log(msgData);
   const [deleteRoomMutation] = useMutation(DELETE_ROOM);
   const [sendMessageMutation] = useMutation(SEND_MESSAGE);
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,7 +99,7 @@ const Room: React.SFC<IProps> = ({ roomId, user, roomRefetch }) => {
     setMsg(value);
   };
 
-  const { data: newData } = useSubscription(NEW_MESSAGE);
+  const { data: newData } = useSubscription(NEW_MESSAGE, { variables: { id: roomId } });
   const handleNewMessage = async () => {
     if (newData !== undefined) {
       const { newMessage } = newData;
@@ -125,7 +131,11 @@ const Room: React.SFC<IProps> = ({ roomId, user, roomRefetch }) => {
     if (roomId) {
       refetch();
     }
+    scrollToBottom();
   }, [roomId]);
+
+  useEffect(() => scrollToBottom());
+
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (msg === "") return;
@@ -147,35 +157,44 @@ const Room: React.SFC<IProps> = ({ roomId, user, roomRefetch }) => {
     setMsg("");
   };
   let id = 1;
-
   return (
     <Container>
-      <Header>
-        {data &&
-          data.getRoom.userConnection.map((each: any) => <UserList>{each.user.username}</UserList>)}
-        <Search roomId={roomId} />
-        <Button onClick={handleRoomOut} text={"Exit"} />
-      </Header>
-      {loading || !roomId ? (
-        <Loading>Welcome to Aqua Chat !</Loading>
+      {ll && !roomId ? (
+        <Skeleton width={"600"} height={"620"} />
       ) : (
-        <Wrapper>
-          <Log>
-            {msgData &&
-              msgData.getMessages.map((message: any) => (
-                <Chat
-                  key={message.id}
-                  itsMe={message.user.username === user}
-                  text={message.text}
-                  currentUser={message.user.username}
-                  isNotif={message.isNotif}
-                />
-              ))}
+        <>
+          <Header>
+            <Column>
+              <Users roomId={roomId} userList={data?.getRoom?.userConnection} />
+            </Column>
+            <Column>
+              <Button onClick={handleRoomOut} text={"나가기"} />
+            </Column>
+          </Header>
 
-            <div ref={mainRef} />
-          </Log>
-          <Message onChange={onChange} onSubmit={onSubmit} text={msg} />
-        </Wrapper>
+          {loading || !roomId ? (
+            <Loading>Welcome to Aqua Chat !</Loading>
+          ) : (
+            <Wrapper>
+              <Log>
+                {msgData &&
+                  msgData.getMessages.map((message: any) => (
+                    <Chat
+                      key={message.id}
+                      avatar={message.user.avatar}
+                      itsMe={message.user.username === user}
+                      text={message.text}
+                      currentUser={message.user.username}
+                      isNotif={message.isNotif}
+                    />
+                  ))}
+
+                <div ref={mainRef} />
+              </Log>
+              <Message onChange={onChange} onSubmit={onSubmit} text={msg} />
+            </Wrapper>
+          )}
+        </>
       )}
     </Container>
   );

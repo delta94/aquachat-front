@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Room from "../Components/Room";
-import Profile from "../Components/Profile";
+import Profile from "../Components/Profile/Profile";
 import List from "../Components/List";
 import { useQuery } from "react-apollo";
 import { GET_ROOMS } from "../Queries/RoomQueries";
 import { IS_LOGGED_IN } from "../Queries/UserQueries";
+import Skeleton from "../Components/Skeleton";
 
 // 대화창이 가운데, 옆에 대기방들, 초대목록
 
@@ -53,27 +54,28 @@ const Home = () => {
   useEffect(() => {
     setRenderRoomId(roomData?.getRooms[0]?.id);
   }, [roomData]);
+  console.log(currentUser);
+  console.log(roomData);
   return (
     <Container>
-      {roomLoading ? (
-        <Loading />
-      ) : (
-        <>
-          <Left>
-            <Room user={currentUser} roomId={renderRoomId} roomRefetch={roomRefetch} />
-          </Left>
-          <Right>
-            <Profile user={currentUser} />
-            <List
-              currentRoom={renderRoomId}
-              roomData={roomData?.getRooms}
-              user={currentUser}
-              handleClick={handleClick}
-              refetch={roomRefetch}
-            />
-          </Right>
-        </>
-      )}
+      <Left>
+        <Room
+          loading={roomLoading}
+          user={currentUser}
+          roomId={renderRoomId}
+          roomRefetch={roomRefetch}
+        />
+      </Left>
+      <Right>
+        <Profile user={currentUser} />
+        <List
+          currentRoom={renderRoomId}
+          roomData={roomData?.getRooms}
+          user={currentUser}
+          handleClick={handleClick}
+          refetch={roomRefetch}
+        />
+      </Right>
     </Container>
   );
 };
