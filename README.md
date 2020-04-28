@@ -1,14 +1,30 @@
-# Aqua Chat
+# Aqua Chatc Client
 
-real time chat app
+Real Time Chat App
+
+## Project Stack
+
+- React
+- React-Router-DOM
+- TypeScript
+- Styled-Components
+- Styled-Reset
+- Apollo GraphQL
+- React-Hooks
+
+## Router
 
 ### Logged Out:
 
-- [ ] Login
+- Login
+- SignUp
 
 ### Logged In:
 
-- [ ] Home(Rooms + Profile)
-- [ ] Edit Profile
+- Home(Rooms + Profile)
+- Edit Profile
 
-### Subscription: Message, New Room
+## Subscription
+
+- New Message
+- New Room
